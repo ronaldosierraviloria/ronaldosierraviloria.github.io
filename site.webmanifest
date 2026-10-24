@@ -1,0 +1,17 @@
+{
+  "name": "Italia: Sabores de Tradición",
+  "short_name": "Sabores Italia",
+  "description": "Sitio web educativo y gastronómico sobre la auténtica cocina tradicional de Italia.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fffdf8",
+  "theme_color": "#17833b",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
