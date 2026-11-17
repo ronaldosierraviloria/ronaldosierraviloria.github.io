@@ -1,15 +1,15 @@
 # 🍝 Italia: Sabores de Tradición (Italy: Flavors of Tradition)
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Website-17833b?style=for-the-badge&logo=github)](https://ronaldosierraviloria.github.io/italiasabores.github.io/)
-[![SEO Score](https://img.shields.io/badge/SEO-100%2F100-success?style=for-the-badge&logo=google)](https://ronaldosierraviloria.github.io/italiasabores.github.io/)
-[![Accessibility](https://img.shields.io/badge/Accessibility-100%2F100-blue?style=for-the-badge)](https://ronaldosierraviloria.github.io/italiasabores.github.io/)
-[![HTML5](https://img.shields.io/badge/HTML5-Semantic-orange?style=for-the-badge&logo=html5)](https://ronaldosierraviloria.github.io/italiasabores.github.io/)
-[![CSS3](https://img.shields.io/badge/CSS3-Responsive-1572B6?style=for-the-badge&logo=css3)](https://ronaldosierraviloria.github.io/italiasabores.github.io/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Website-17833b?style=for-the-badge&logo=github)](https://ronaldosierraviloria.github.io/)
+[![SEO Score](https://img.shields.io/badge/SEO-100%2F100-success?style=for-the-badge&logo=google)](https://ronaldosierraviloria.github.io/)
+[![Accessibility](https://img.shields.io/badge/Accessibility-100%2F100-blue?style=for-the-badge)](https://ronaldosierraviloria.github.io/)
+[![HTML5](https://img.shields.io/badge/HTML5-Semantic-orange?style=for-the-badge&logo=html5)](https://ronaldosierraviloria.github.io/)
+[![CSS3](https://img.shields.io/badge/CSS3-Responsive-1572B6?style=for-the-badge&logo=css3)](https://ronaldosierraviloria.github.io/)
 
 Sitio web bilingüe (Español / Inglés) de divulgación gastronómica y cultural dedicado a la auténtica cocina italiana tradicional, sus recetas emblemáticas, ingredientes con denominación de origen y costumbres culinarias regionales.
 
 🌐 **Enlace directo al sitio web en GitHub Pages:**  
-👉 **[https://ronaldosierraviloria.github.io/italiasabores.github.io/](https://ronaldosierraviloria.github.io/italiasabores.github.io/)**
+👉 **[https://ronaldosierraviloria.github.io/](https://ronaldosierraviloria.github.io/)**
 
 ---
 
@@ -81,7 +81,7 @@ Para verificar la configuración de GitHub Pages manualmente en el repositorio:
 1. Dirígete a **Settings** > **Pages** en tu repositorio de GitHub.
 2. En **Build and deployment > Source**, selecciona **GitHub Actions** (o **Deploy from a branch** seleccionando la rama `main` y `/ (root)`).
 3. Tu sitio estará disponible en:  
-   `https://ronaldosierraviloria.github.io/italiasabores.github.io/`
+   `https://ronaldosierraviloria.github.io/`
 
 ---
 

@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap URL
-Sitemap: https://ronaldosierraviloria.github.io/italiasabores.github.io/sitemap.xml
+Sitemap: https://ronaldosierraviloria.github.io/sitemap.xml
