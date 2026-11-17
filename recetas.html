@@ -43,6 +43,7 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="CSS/estilos.css">
+    <script src="js/site.js" defer></script>
 
     <!-- Structured Data (Schema.org) for Google Rich Snippets -->
     <script type="application/ld+json">
@@ -259,7 +260,19 @@
         <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Abrir menú de navegación">☰</button>
         <ul class="nav-list" id="nav-menu">
             <li><a href="index.html">Inicio <span lang="en">/ Home</span></a></li>
-            <li><a href="platos.html">Platos <span lang="en">/ Dishes</span></a></li>
+            <li class="has-dropdown">
+                <div class="nav-dropdown">
+                    <a href="platos.html">Platos <span lang="en">/ Dishes</span></a>
+                    <button class="dropdown-toggle" type="button" aria-expanded="false" aria-controls="dish-submenu" aria-label="Mostrar submenú de platos">
+                        <span class="dropdown-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <ul class="dropdown-menu" id="dish-submenu" hidden>
+                    <li><a href="platos.html#pizza-napolitana">Pizza Napolitana</a></li>
+                    <li><a href="platos.html#pasta-carbonara">Pasta Carbonara</a></li>
+                    <li><a href="platos.html#lasana">Lasaña Boloñesa</a></li>
+                </ul>
+            </li>
             <li><a href="platos.html#ingredientes">Ingredientes <span lang="en">/ Ingredients</span></a></li>
             <li><a href="recetas.html" class="active" aria-current="page">Recetas <span lang="en">/ Recipes</span></a></li>
             <li><a href="index.html#regiones">Regiones <span lang="en">/ Regions</span></a></li>
@@ -270,6 +283,7 @@
 </header>
 
 <main id="contenido" tabindex="-1">
+    <p class="personalized-message" id="welcome-message" role="status" aria-live="polite"></p>
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs" aria-label="Miga de pan">
         <ol>
@@ -566,37 +580,6 @@
     <p>Sitio web educativo sobre la gastronomía italiana | Optimizado para accesibilidad, rendimiento y SEO internacional.</p>
     <p><small>&copy; 2026 Italia: Sabores de Tradición. Todos los derechos reservados.</small></p>
 </footer>
-
-<script>
-    // Navigation toggle
-    const nav = document.getElementById('mainNav');
-    const toggle = document.querySelector('.nav-toggle');
-
-    if (toggle && nav) {
-        toggle.addEventListener('click', () => {
-            const isOpen = nav.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', String(isOpen));
-            toggle.setAttribute('aria-label', isOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
-            toggle.textContent = isOpen ? '✕' : '☰';
-        });
-    }
-
-    // Active state for recipe pills
-    const recipePills = document.querySelectorAll('.recipe-nav a');
-    function updateActiveRecipe() {
-        const hash = window.location.hash || '#pizza-napolitana';
-        recipePills.forEach(pill => {
-            if (pill.getAttribute('href') === hash) {
-                pill.classList.add('active');
-            } else {
-                pill.classList.remove('active');
-            }
-        });
-    }
-
-    window.addEventListener('hashchange', updateActiveRecipe);
-    updateActiveRecipe();
-</script>
 
 </body>
 </html>

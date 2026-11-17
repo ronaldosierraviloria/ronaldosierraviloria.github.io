@@ -43,6 +43,7 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="CSS/estilos.css">
+    <script src="js/site.js" defer></script>
 
     <!-- Structured Data (JSON-LD) for Schema.org -->
     <script type="application/ld+json">
@@ -122,7 +123,19 @@
         <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Abrir menú de navegación">☰</button>
         <ul class="nav-list" id="nav-menu">
             <li><a href="index.html" class="active" aria-current="page">Inicio <span lang="en">/ Home</span></a></li>
-            <li><a href="platos.html">Platos <span lang="en">/ Dishes</span></a></li>
+            <li class="has-dropdown">
+                <div class="nav-dropdown">
+                    <a href="platos.html">Platos <span lang="en">/ Dishes</span></a>
+                    <button class="dropdown-toggle" type="button" aria-expanded="false" aria-controls="dish-submenu" aria-label="Mostrar submenú de platos">
+                        <span class="dropdown-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <ul class="dropdown-menu" id="dish-submenu" hidden>
+                    <li><a href="platos.html#pizza-napolitana">Pizza Napolitana</a></li>
+                    <li><a href="platos.html#pasta-carbonara">Pasta Carbonara</a></li>
+                    <li><a href="platos.html#lasana">Lasaña Boloñesa</a></li>
+                </ul>
+            </li>
             <li><a href="platos.html#ingredientes">Ingredientes <span lang="en">/ Ingredients</span></a></li>
             <li><a href="recetas.html">Recetas <span lang="en">/ Recipes</span></a></li>
             <li><a href="index.html#regiones">Regiones <span lang="en">/ Regions</span></a></li>
@@ -133,16 +146,32 @@
 </header>
 
 <main id="contenido" tabindex="-1">
+    <p class="personalized-message" id="welcome-message" role="status" aria-live="polite"></p>
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="bienvenida">
-        <div class="hero-image">
-            <img src="images/imagen-principal.jpg" 
-                 alt="Mesa servida con ingredientes frescos y platos tradicionales de la cocina italiana como pastas, tomates, aceite de oliva y hierbas" 
-                 width="1248" 
-                 height="770" 
-                 loading="eager" 
-                 fetchpriority="high"
-                 decoding="async" />
+        <div class="hero-slider" data-slider role="region" aria-roledescription="carrusel" aria-label="Galería de gastronomía italiana">
+            <div class="slider-track" aria-live="off">
+                <div class="hero-slide is-active">
+                    <img src="images/imagen-principal.jpg"
+                         alt="Mesa servida con ingredientes frescos y platos tradicionales de la cocina italiana como pastas, tomates, aceite de oliva y hierbas"
+                         width="1248" height="770" loading="eager" fetchpriority="high" decoding="async">
+                </div>
+                <div class="hero-slide" hidden>
+                    <img src="images/foto-pizza.jpg"
+                         alt="Pizza napolitana recién horneada con tomate, mozzarella y albahaca"
+                         width="1200" height="1200" loading="lazy" decoding="async">
+                </div>
+                <div class="hero-slide" hidden>
+                    <img src="images/foto-pastas.jpg"
+                         alt="Pasta italiana artesanal servida con salsa tradicional"
+                         width="800" height="534" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="slider-controls" role="group" aria-label="Controles de la galería">
+                <button class="slider-button" type="button" data-slider-previous aria-label="Imagen anterior">‹</button>
+                <button class="slider-button slider-pause" type="button" data-slider-pause aria-pressed="false" aria-label="Pausar presentación">Pausar</button>
+                <button class="slider-button" type="button" data-slider-next aria-label="Imagen siguiente">›</button>
+            </div>
         </div>
         <div class="hero-content">
             <h2 id="bienvenida">Bienvenido <span lang="en">/ Welcome</span></h2>
@@ -255,20 +284,6 @@
     <p>Sitio web educativo sobre la gastronomía italiana | Optimizado para accesibilidad, rendimiento y SEO internacional.</p>
     <p><small>&copy; 2026 Italia: Sabores de Tradición. Todos los derechos reservados.</small></p>
 </footer>
-
-<script>
-    const nav = document.getElementById('mainNav');
-    const toggle = document.querySelector('.nav-toggle');
-
-    if (toggle && nav) {
-        toggle.addEventListener('click', () => {
-            const isOpen = nav.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', String(isOpen));
-            toggle.setAttribute('aria-label', isOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
-            toggle.textContent = isOpen ? '✕' : '☰';
-        });
-    }
-</script>
 
 </body>
 </html>
