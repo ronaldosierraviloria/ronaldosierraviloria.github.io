@@ -1,6 +1,0 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Allow: /
-
-# Sitemap URL
-Sitemap: https://ronaldosierraviloria.github.io/sitemap.xml

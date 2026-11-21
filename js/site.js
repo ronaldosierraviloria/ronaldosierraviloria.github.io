@@ -1,7 +1,31 @@
 (() => {
+    'use strict';
+
+    if (window.ItaliaComidaSabores && typeof window.ItaliaComidaSabores.destroy === 'function') {
+        window.ItaliaComidaSabores.destroy();
+    }
+
+    const cleanups = [];
+
+    const listen = (target, type, handler, options) => {
+        target.addEventListener(type, handler, options);
+        cleanups.push(() => target.removeEventListener(type, handler, options));
+    };
+
+    const listenMediaQuery = (mediaQueryList, handler) => {
+        if (typeof mediaQueryList.addEventListener === 'function') {
+            listen(mediaQueryList, 'change', handler);
+        } else if (typeof mediaQueryList.addListener === 'function') {
+            mediaQueryList.addListener(handler);
+            cleanups.push(() => mediaQueryList.removeListener(handler));
+        }
+    };
+
     const language = new URLSearchParams(window.location.search).get('lang') === 'en'
         ? 'en'
         : 'es';
+
+    const t = (es, en) => (language === 'en' ? en : es);
 
     document.querySelectorAll('.language a').forEach((link) => {
         const linkLanguage = new URL(link.href, window.location.href).searchParams.get('lang');
@@ -38,86 +62,160 @@
     const navigation = document.getElementById('mainNav');
     const menuToggle = navigation && navigation.querySelector('.nav-toggle');
     if (navigation && menuToggle) {
+        const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        const dropdownControllers = [];
+
+        const closeAllDropdowns = (except) => {
+            dropdownControllers.forEach((controller) => {
+                if (controller !== except) {
+                    controller.setOpen(false);
+                }
+            });
+        };
+
         const setMenuOpen = (isOpen) => {
             navigation.classList.toggle('open', isOpen);
             menuToggle.setAttribute('aria-expanded', String(isOpen));
             menuToggle.setAttribute(
                 'aria-label',
                 isOpen
-                    ? (language === 'en' ? 'Close navigation menu' : 'Cerrar menú de navegación')
-                    : (language === 'en' ? 'Open navigation menu' : 'Abrir menú de navegación')
+                    ? t('Cerrar menú de navegación', 'Close navigation menu')
+                    : t('Abrir menú de navegación', 'Open navigation menu')
             );
             menuToggle.textContent = isOpen ? '✕' : '☰';
+            if (!isOpen) {
+                closeAllDropdowns();
+            }
         };
-
-        menuToggle.addEventListener('click', () => {
-            setMenuOpen(menuToggle.getAttribute('aria-expanded') !== 'true');
-        });
 
         navigation.querySelectorAll('.has-dropdown').forEach((dropdown) => {
             const button = dropdown.querySelector('.dropdown-toggle');
             const submenu = dropdown.querySelector('.dropdown-menu');
-            const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             if (!button || !submenu) {
                 return;
             }
 
-            const setDropdownOpen = (isOpen) => {
-                dropdown.classList.toggle('open', isOpen);
-                button.setAttribute('aria-expanded', String(isOpen));
+            const getItems = () => Array.from(submenu.querySelectorAll('a[href]'));
+            const isOpen = () => button.getAttribute('aria-expanded') === 'true';
+
+            const setDropdownOpen = (open) => {
+                dropdown.classList.toggle('open', open);
+                button.setAttribute('aria-expanded', String(open));
                 button.setAttribute(
                     'aria-label',
-                    isOpen
-                        ? (language === 'en' ? 'Hide dishes submenu' : 'Ocultar submenú de platos')
-                        : (language === 'en' ? 'Show dishes submenu' : 'Mostrar submenú de platos')
+                    open
+                        ? t('Ocultar submenú de platos', 'Hide dishes submenu')
+                        : t('Mostrar submenú de platos', 'Show dishes submenu')
                 );
-                submenu.hidden = !isOpen;
+                submenu.hidden = !open;
+            };
+
+            const controller = { dropdown, setOpen: setDropdownOpen };
+            dropdownControllers.push(controller);
+
+            const focusItem = (index) => {
+                const items = getItems();
+                if (items.length > 0) {
+                    items[(index + items.length) % items.length].focus();
+                }
             };
 
             if (hoverCapable) {
-                dropdown.addEventListener('mouseover', () => setDropdownOpen(true));
-                dropdown.addEventListener('mouseout', (event) => {
-                    if (!dropdown.contains(event.relatedTarget)) {
+                listen(dropdown, 'pointerenter', (event) => {
+                    if (event.pointerType === 'mouse') {
+                        closeAllDropdowns(controller);
+                        setDropdownOpen(true);
+                    }
+                });
+                listen(dropdown, 'pointerleave', (event) => {
+                    if (event.pointerType === 'mouse') {
                         setDropdownOpen(false);
                     }
                 });
             }
-            dropdown.addEventListener('focusin', () => setDropdownOpen(true));
-            dropdown.addEventListener('focusout', (event) => {
+
+            listen(dropdown, 'focusin', () => {
+                closeAllDropdowns(controller);
+                setDropdownOpen(true);
+            });
+            listen(dropdown, 'focusout', (event) => {
                 if (!dropdown.contains(event.relatedTarget)) {
                     setDropdownOpen(false);
                 }
             });
-            button.addEventListener('click', () => {
-                setDropdownOpen(button.getAttribute('aria-expanded') !== 'true');
+            listen(button, 'click', () => {
+                setDropdownOpen(!isOpen());
             });
-            dropdown.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape') {
-                    button.focus();
-                    setDropdownOpen(false);
+
+            listen(dropdown, 'keydown', (event) => {
+                const items = getItems();
+                const currentIndex = items.indexOf(document.activeElement);
+
+                switch (event.key) {
+                    case 'Escape':
+                        if (isOpen()) {
+                            event.preventDefault();
+                            button.focus();
+                            setDropdownOpen(false);
+                        }
+                        break;
+                    case 'ArrowDown':
+                        event.preventDefault();
+                        setDropdownOpen(true);
+                        focusItem(currentIndex + 1);
+                        break;
+                    case 'ArrowUp':
+                        event.preventDefault();
+                        setDropdownOpen(true);
+                        focusItem(currentIndex < 0 ? -1 : currentIndex - 1);
+                        break;
+                    case 'Home':
+                        if (currentIndex >= 0) {
+                            event.preventDefault();
+                            focusItem(0);
+                        }
+                        break;
+                    case 'End':
+                        if (currentIndex >= 0) {
+                            event.preventDefault();
+                            focusItem(items.length - 1);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             });
         });
 
-        navigation.addEventListener('click', (event) => {
+        listen(menuToggle, 'click', () => {
+            setMenuOpen(menuToggle.getAttribute('aria-expanded') !== 'true');
+        });
+
+        listen(navigation, 'click', (event) => {
             if (event.target.closest('.nav-list a')) {
                 setMenuOpen(false);
             }
         });
 
-        document.addEventListener('click', (event) => {
-            if (!navigation.contains(event.target)) {
-                navigation.querySelectorAll('.has-dropdown.open').forEach((dropdown) => {
-                    const button = dropdown.querySelector('.dropdown-toggle');
-                    const submenu = dropdown.querySelector('.dropdown-menu');
-                    dropdown.classList.remove('open');
-                    if (button && submenu) {
-                        button.setAttribute('aria-expanded', 'false');
-                        submenu.hidden = true;
-                    }
-                });
+        listen(navigation, 'keydown', (event) => {
+            if (
+                event.key === 'Escape' &&
+                !event.defaultPrevented &&
+                menuToggle.getAttribute('aria-expanded') === 'true'
+            ) {
+                setMenuOpen(false);
+                menuToggle.focus();
             }
         });
+
+        listen(document, 'click', (event) => {
+            if (!navigation.contains(event.target)) {
+                closeAllDropdowns();
+            }
+        });
+
+        setMenuOpen(false);
     }
 
     document.querySelectorAll('[data-slider]').forEach((slider) => {
@@ -130,10 +228,11 @@
         }
 
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const interval = 5000;
         let currentSlide = slides.findIndex((slide) => slide.classList.contains('is-active'));
         let timer = null;
         let userPaused = false;
-        const interval = 5000;
+        let pointerInside = false;
 
         if (currentSlide < 0) {
             currentSlide = 0;
@@ -161,7 +260,7 @@
                 !userPaused &&
                 !reducedMotion.matches &&
                 !document.hidden &&
-                !slider.matches(':hover') &&
+                !pointerInside &&
                 !slider.contains(document.activeElement)
             ) {
                 timer = window.setInterval(() => {
@@ -173,21 +272,19 @@
         const updatePauseButton = () => {
             const isPaused = userPaused;
             pauseButton.setAttribute('aria-pressed', String(isPaused));
-            pauseButton.textContent = isPaused
-                ? (language === 'en' ? 'Resume' : 'Reanudar')
-                : (language === 'en' ? 'Pause' : 'Pausar');
+            pauseButton.textContent = isPaused ? t('Reanudar', 'Resume') : t('Pausar', 'Pause');
             pauseButton.setAttribute(
                 'aria-label',
                 isPaused
-                    ? (language === 'en' ? 'Resume slideshow' : 'Reanudar presentación')
-                    : (language === 'en' ? 'Pause slideshow' : 'Pausar presentación')
+                    ? t('Reanudar presentación', 'Resume slideshow')
+                    : t('Pausar presentación', 'Pause slideshow')
             );
             pauseButton.hidden = reducedMotion.matches;
         };
 
-        previousButton.addEventListener('click', () => showSlide(currentSlide - 1));
-        nextButton.addEventListener('click', () => showSlide(currentSlide + 1));
-        pauseButton.addEventListener('click', () => {
+        listen(previousButton, 'click', () => showSlide(currentSlide - 1));
+        listen(nextButton, 'click', () => showSlide(currentSlide + 1));
+        listen(pauseButton, 'click', () => {
             userPaused = !userPaused;
             updatePauseButton();
             if (userPaused) {
@@ -197,34 +294,44 @@
             }
         });
 
-        slider.addEventListener('mouseover', stopTimer);
-        slider.addEventListener('mouseout', (event) => {
+        listen(slider, 'pointerenter', (event) => {
+            if (event.pointerType === 'mouse') {
+                pointerInside = true;
+                stopTimer();
+            }
+        });
+        listen(slider, 'pointerleave', (event) => {
+            if (event.pointerType === 'mouse') {
+                pointerInside = false;
+                startTimer();
+            }
+        });
+
+        listen(slider, 'focusin', stopTimer);
+        listen(slider, 'focusout', (event) => {
             if (!slider.contains(event.relatedTarget)) {
                 startTimer();
             }
         });
-        slider.addEventListener('focusin', stopTimer);
-        slider.addEventListener('focusout', (event) => {
-            if (!slider.contains(event.relatedTarget)) {
-                startTimer();
-            }
-        });
-        document.addEventListener('visibilitychange', () => {
+
+        listen(document, 'visibilitychange', () => {
             if (document.hidden) {
                 stopTimer();
             } else {
                 startTimer();
             }
         });
-        const handleMotionPreferenceChange = () => {
+
+        listenMediaQuery(reducedMotion, () => {
             updatePauseButton();
-            startTimer();
-        };
-        if (typeof reducedMotion.addEventListener === 'function') {
-            reducedMotion.addEventListener('change', handleMotionPreferenceChange);
-        } else {
-            reducedMotion.addListener(handleMotionPreferenceChange);
-        }
+            if (reducedMotion.matches) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        cleanups.push(stopTimer);
 
         showSlide(currentSlide);
         updatePauseButton();
@@ -246,7 +353,21 @@
     };
 
     if (recipePills.length > 0) {
-        window.addEventListener('hashchange', updateActiveRecipe);
+        listen(window, 'hashchange', updateActiveRecipe);
         updateActiveRecipe();
     }
+
+    let destroyed = false;
+
+    const destroy = () => {
+        if (destroyed) {
+            return;
+        }
+        destroyed = true;
+        while (cleanups.length > 0) {
+            cleanups.pop()();
+        }
+    };
+
+    window.ItaliaComidaSabores = Object.freeze({ destroy });
 })();

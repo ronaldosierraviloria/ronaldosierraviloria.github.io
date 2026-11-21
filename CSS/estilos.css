@@ -610,6 +610,46 @@ main {
     line-height: 1.5;
 }
 
+.traditions-slider {
+    position: relative;
+}
+
+.traditions-slider .slider-track {
+    position: relative;
+}
+
+.traditions-slider .traditions-slide {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.traditions-slider .traditions-slide[hidden] {
+    display: none;
+}
+
+.traditions-slider .info-item {
+    height: 100%;
+}
+
+.traditions-slider .slider-controls {
+    position: static;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.traditions-slider .slider-button {
+    border-color: #17833b;
+    background: #17833b;
+}
+
+.traditions-slider .slider-button:hover,
+.traditions-slider .slider-button:focus-visible {
+    background: #0f6f2f;
+}
+
 .regions {
     margin-top: 45px;
     padding: 30px;
